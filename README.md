@@ -1,7 +1,7 @@
 ggtracker-python
 ================
 
-A simple API client for (GGTracker.)[http://ggtracker.com]
+A simple API client for [GGTracker.](http://ggtracker.com)
 
 ## Installation
 
@@ -30,13 +30,13 @@ You can construct queries by supplying an endpoint and chaining together the fol
 Once you construct the query, calling get() will execute it and return a GGTrackerResult.
 
     r = gg.query('identities').limit(20).match(gateway='us').paginate().get()
-    r.data  # stores your query results
+    r.data  # stores your query results as a Python list
 
 ## Implementation Details
 
 #### Rate Limit
 
-The client supports a courtesy rate limit, defaulted to 60 requests per minute. If you exceed the rate limit, the client will block upon *creation* of a new query until enough time has passed. Rate limits can be altered by passing the number of permissible requests per minute to the constructor, or 0 to disable.
+The client supports a courtesy rate limit, defaulted to 60 requests per minute. If you exceed the rate limit, the client will block upon **creation** of a new query until enough time has passed. Rate limits can be altered by passing the number of permissible requests per minute to the constructor, or 0 to disable.
 
     gg = GGTrackerAPI('api.ggtracker.com', rate_limit=0)
 
@@ -62,4 +62,4 @@ There is a bug where Protoss players will feel shame when they try to use this l
 
 ## Credits
 
- * [David Joerg](https://twitter.com/dsjoerg) for creating GGTracker and helping me grok the API
+ * [David Joerg](https://twitter.com/dsjoerg) for creating GGTracker and for helping me grok the API
