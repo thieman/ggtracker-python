@@ -1,1 +1,1 @@
-from .client import GGTrackerAPI, GGTrackerQuery, GGTrackerResult
+from .client import GGTrackerAPI, GGTrackerQuery

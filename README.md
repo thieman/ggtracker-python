@@ -27,10 +27,11 @@ You can construct queries by supplying an endpoint and chaining together the fol
   * match(user='Zoulas', gateway='us')
   * filter(graphs=None, match=['replays', 'map'])
 
-Once you construct the query, calling get() will execute it and return a GGTrackerResult.
+Once you construct the query, you can then iterate over it, where each element is a member of the 'collection' list in the resulting JSON.
 
-    r = gg.query('identities').limit(20).match(gateway='us').paginate().get()
-    r.data  # stores your query results as a Python list
+    query = gg.query('identities').limit(20).match(gateway='us').paginate()
+    for record in query:
+        do_stuff(record)
 
 ## Implementation Details
 
@@ -45,10 +46,6 @@ The client supports a courtesy rate limit, defaulted to 60 requests per minute. 
 If you do not explicitly set any filters, some API endpoints will assign default filters to your query in order to reduce load on GGTracker's API. This is intended behavior. If you would like to force no filters on your query, do the following:
 
     gg.query('matches').filter(clear=True)
-
-#### Known Bugs
-
-There is a bug where Protoss players will feel shame when they try to use this library. Well, actually, this has nothing to do with the library, because those "people" should be ashamed of themselves. Always.
 
 ## TODO
 

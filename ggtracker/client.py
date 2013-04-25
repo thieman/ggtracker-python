@@ -100,8 +100,7 @@ class GGTrackerQuery(object):
     """ Constructs a query against the API and executes as a GET request.
 
     Query constructor methods are chainable. Requests are only executed
-    upon a few explicit commands. Upon execution, a GGTrackerResult object
-    is returned.
+    upon a few explicit commands.
 
     The query will block *on creation* if the rate limit is exceeded from
     the parent API object. If you don't like this, disable the rate limit.
@@ -124,19 +123,38 @@ class GGTrackerQuery(object):
         self._order = None
         self._filters = {}
         self._match = {}
+        self.result = None
 
 
     def __repr__(self):
         return '<GGTrackerQuery (uri: %s)>' % self.uri
 
 
-    def get(self):
-        """ Execute the stored query and return a GGTrackerResult """
+    def __iter__(self):
+        """ Iterate over the result set """
+        self._get()
+        for rec in self.result.get('collection', []):
+            yield rec
 
-        payload = self._construct_payload()
-        r = requests.get(self.uri, params=payload)
-        r.raise_for_status()
-        return GGTrackerResult(self.uri, self.endpoint, payload, r.json())
+
+    def _get(self):
+        """ Execute the stored query """
+
+        if self.result is None:
+            payload = self._construct_payload()
+            r = requests.get(self.uri, params=payload)
+            r.raise_for_status()
+            self.result = r.json()
+
+
+    def one(self):
+        """ Returns the first (and only) doc in the result set, otherwise
+        raises an exception. """
+
+        self._get()
+        if len(self.result.get('collection', [])) != 1:
+            raise ValueError('query did not return exactly one result')
+        return self.result['collection'][0]
 
 
     def _construct_payload(self):
@@ -214,33 +232,8 @@ class GGTrackerQuery(object):
 
     def filter(self, **kwargs):
         """ Add one or many new matching filters to the filter
-        set using kwargs.
-
-        These aren't what go in the actual 'filter' URL parameter. These
-        are used to match against the db, like name=Zoulas """
+        set using kwargs. """
 
         for filter_name, filter_value in kwargs.iteritems():
             self._filters[filter_name] = filter_value
         return self
-
-
-class GGTrackerResult(object):
-    """ Representation of one JSON result from GGTracker's API """
-
-    def __init__(self, uri, endpoint, payload, json_returned):
-        """ Initializes from GGTracker returned JSON """
-
-        self.uri = uri
-        self.endpoint = endpoint
-        self.payload = payload
-        self.raw = json_returned
-
-        self.data = json_returned.get('collection', [])
-        if not isinstance(self.data, list):
-            raise TypeError('query did not return list')
-
-
-    def one(self):
-        """ Raises an error unless exactly one document returned. """
-        if len(self.data) != 1:
-            raise ValueError('result contains fewer or more than one document')

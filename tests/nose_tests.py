@@ -1,4 +1,4 @@
-from ggtracker import GGTrackerAPI, GGTrackerQuery, GGTrackerResult
+from ggtracker import GGTrackerAPI, GGTrackerQuery
 
 gg = None
 
@@ -82,25 +82,20 @@ def test_rate_limit_blocking():
 
 def test_identities_returns_result():
     query = gg.query('identities')
-    result = query.get()
-    assert isinstance(result, GGTrackerResult)
+    for rec in query:
+        return
+    assert False
 
 
 def test_matches_returns_result():
     query = gg.query('matches')
-    result = query.get()
-    assert isinstance(result, GGTrackerResult)
-
-
-def test_result_data_is_python_list():
-    query = gg.query('matches')
-    result = query.get()
-    assert isinstance(result.data, list)
+    for rec in query:
+        return
+    assert False
 
 
 def test_identity_one():
     query = gg.query('identities').match(user='Omni').\
         match(gateway='us').\
         match(bnet_id='273698')
-    result = query.get()
-    result.one()
+    query.one()
