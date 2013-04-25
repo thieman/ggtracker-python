@@ -5,11 +5,7 @@ A simple API client for [GGTracker.](http://ggtracker.com)
 
 ## Installation
 
-At some point in the near future, this will be on PyPi.
-
     pip install ggtracker-client
-
-Until then, clone the repo, I guess.
 
 ## Usage
 
