@@ -46,10 +46,36 @@ def test_query_paginate_setting():
                                           'paginate': 'true'}
 
 
-def test_query_order_setting():
-    query = gg.query('identities').order('_played_at')
+def test_query_order_setting_ascending():
+    query = gg.query('identities').order('played_at', ascending=True)
+    assert query._construct_payload() == {'limit': 10, 'offset': 0,
+                                          'order': '-played_at'}
+
+
+def test_query_order_setting_descending():
+    query = gg.query('identities').order('played_at', ascending=False)
     assert query._construct_payload() == {'limit': 10, 'offset': 0,
                                           'order': '_played_at'}
+
+
+def test_query_sc2ranks_setting():
+    query = gg.query('identities').sc2ranks()
+    assert query._construct_payload() == {'limit': 10, 'offset': 0,
+                                          'sc2ranks': 'true'}
+
+
+def test_query_game_type_setting():
+    query = gg.query('matches').game_type('1v1')
+    assert query._construct_payload() == {'limit': 10, 'offset': 0,
+                                          'game_type': '1v1'}
+
+
+def test_query_game_type_invalid():
+    try:
+        query = gg.query('matches').game_type('8v8')
+    except ValueError:
+        return
+    raise ValueError('test failed')
 
 
 def test_query_match_setting():
@@ -71,6 +97,12 @@ def test_null_filter_setting():
     query = gg.query('matches').filter(clear=True)
     assert query._construct_payload() == {'limit': 10, 'offset': 0,
                                           'filter': ''}
+
+
+def test_query_summary_setting():
+    query = gg.query('matches').summary()
+    assert query._construct_payload() == {'limit': 10, 'offset': 0,
+                                          'summary': 'true'}
 
 
 def test_rate_limit_blocking():

@@ -120,7 +120,11 @@ class GGTrackerQuery(object):
         self._limit = 10
         self._offset = 0
         self._paginate = False
-        self._order = None
+        self._summary = False
+        self._sc2ranks = False
+        self._order_by_field = None
+        self._order_by_ascending = True
+        self._game_type = None
         self._filters = {}
         self._match = {}
         self.result = None
@@ -161,12 +165,22 @@ class GGTrackerQuery(object):
 
         payload = {}
 
-        for attr in ['_limit', '_offset', '_order']:
+        for attr in ['_limit', '_offset', '_game_type']:
             if getattr(self, attr) is not None:
                 payload[attr.lstrip('_')] = getattr(self, attr)
 
+        if self._order_by_field:
+            payload['order'] = ''.join(['-' if self._order_by_ascending else '_',
+                                        self._order_by_field])
+
         if self._paginate:
             payload['paginate'] = 'true'
+
+        if self._summary:
+            payload['summary'] = 'true'
+
+        if self._sc2ranks:
+            payload['sc2ranks'] = 'true'
 
         for k, v in self._match.iteritems():
             payload[k] = v
@@ -203,13 +217,43 @@ class GGTrackerQuery(object):
         return self
 
 
+    def summary(self, enable=True):
+        """ Only return matches that have at least one replay """
+
+        self._summary = enable
+        return self
+
+
+    def sc2ranks(self, enable=True):
+        """ Return results in SC2Ranks format """
+
+        self._sc2ranks = enable
+        return self
+
+
     def paginate(self, enable=True):
+        """ Return full information on the size of the result set to allow
+        for reliable pagination. Puts additional strain on GGTracker, so is
+        disabled by default on queries. """
+
         self._paginate = enable
         return self
 
 
-    def order(self, order):
-        self._order = order
+    def order(self, field, ascending=True):
+        """ Field to order results by (e.g. ended_at). """
+        self._order_by_field = field
+        self._order_by_ascending = ascending
+        return self
+
+
+    def game_type(self, game_type):
+        """ Return only results for a specified game type. """
+
+        known = ['1v1', '2v2', '3v3', '4v4', 'FFA']
+        if game_type not in known:
+            raise ValueError('Unknown game type %s' % str(game_type))
+        self._game_type = game_type
         return self
 
 
@@ -223,7 +267,9 @@ class GGTrackerQuery(object):
         set using kwargs.
 
         These aren't what go in the actual 'filter' URL parameter. These
-        are used to match against the db, like name=Zoulas """
+        are used to match against the db, like name=Zoulas. This can be used
+        to pass through any query parameters that do not have their own
+        dedicated chainable methods. """
 
         for filter_name, filter_value in kwargs.iteritems():
             self._match[filter_name] = filter_value

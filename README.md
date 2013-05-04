@@ -5,7 +5,11 @@ A simple API client for [GGTracker.](http://ggtracker.com)
 
 ## Installation
 
+Tagged versions are available on PyPi (though the 0.1 release is not tagged; my bad).
+
     pip install ggtracker-client
+
+Otherwise, clone this repo for the latest and greatest.
 
 ## Usage
 
@@ -14,12 +18,15 @@ First, get yourself a client.
     from ggtracker import GGTrackerAPI
     gg = GGTrackerAPI('api.ggtracker.com')
 
-You can construct queries by supplying an endpoint and chaining together the following modifiers.
+You can construct queries by supplying an endpoint and chaining together the following modifiers. Explanations of the less-obvious methods can be found in their docstrings.
 
   * limit(int)
   * offset(int)
   * paginate()
-  * order(int)
+  * summary()
+  * sc2ranks()
+  * game_type(str in ['1v1', '2v2', '3v3', '4v4', 'FFA'])
+  * order(field_name, ascending=True)
   * match(user='Zoulas', gateway='us')
   * filter(graphs=None, match=['replays', 'map'])
 

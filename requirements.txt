@@ -1,0 +1,4 @@
+argparse==1.2.1
+-e git+git@github.com:tthieman/ggtracker-python@b4cc3cf6316754d50cd331eb735cee3356497ae2#egg=ggtracker_client-dev
+requests==1.2.0
+wsgiref==0.1.2
