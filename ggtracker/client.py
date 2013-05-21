@@ -63,6 +63,19 @@ class GGTrackerAPI(object):
                               endpoint, block_time)
 
 
+    def get_match(self, match_id):
+        """ Return the raw document for one match by ID.
+
+        This method does not apply any of the chainable methods and does
+        not alter this object's state. It is standalone.
+        """
+
+        uri = '/'.join([self.target, 'matches', str(match_id) + '.json'])
+        r = requests.get(uri)
+        r.raise_for_status()
+        return r.json()
+
+
     def _get_block_time_seconds(self):
         """ Returns float of the number of seconds to wait before
         the request limit will no longer be exceeded. Also clears out
